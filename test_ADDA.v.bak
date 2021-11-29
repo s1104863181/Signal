@@ -1,0 +1,58 @@
+module test_all(
+	input clk,
+	//DA PINS
+	output reg [13:0]DA_A,
+	output reg [13:0]DA_B,
+	output DA_CLK_A,
+	output DA_CLK_B,
+	output DA_WR_A,
+	output DA_WR_B,
+	//AD PINS
+	output AD_ECODE_A,
+	output AD_ECODE_B,
+	output AD_S1,
+	output AD_S2,
+	output AD_DFS_GAIN,
+	input [9:0]AD_A,//使用AD9288时低2位无效
+	input [9:0]AD_B,//使用AD9288时低2位无效
+	);
+	
+	wire clk_40M;
+	wire clk_125M;
+	
+	clk2	clk2_inst (
+	.inclk0 ( clk ),
+	.c0 ( clk_40M ),
+	.c1 ( clk_125M )
+	);
+	
+	///////////////////////////////////////////////AD///////////////////////////////////////
+	reg [9:0]AD_A_buf;/*synthesis noprune*/ 
+	reg [9:0]AD_B_buf;/*synthesis noprune*/ 
+	
+	always @(posedge clk_40M)
+	begin
+		AD_A_buf <= AD_A;
+		AD_B_buf <= AD_B;
+	end
+	
+	assign AD_ECODE_A = ~clk_40M;
+	assign AD_ECODE_B = ~clk_40M;
+	
+	assign AD_S1 = 1;
+	assign AD_S2 = 0;
+	assign AD_DFS_GAIN = 0;
+
+	////////////////////////////////////////////////DA/////////////////////////////////////
+	reg [13:0]cnt;
+	always @(posedge clk_125M)
+	begin
+		cnt <= cnt + 1;
+		DA_A <= cnt;
+		DA_B <= cnt;
+	end
+	DA_CLK_A = clk_125M;
+	DA_CLK_B = clk_125M;
+	DA_WR_A = clk_125M;
+	DA_WR_B = clk_125M;
+endmodule 

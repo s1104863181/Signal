@@ -1,0 +1,19 @@
+module xjy(
+input c,
+input clk,
+output reg e
+
+);
+
+reg[0:0] d1;
+
+initial begin
+	e  <= 1'b0;
+	d1  <= 1'b0;
+end
+
+always @(posedge clk)begin
+	d1 <= c;
+	e <= d1 & (~c);
+	end
+endmodule 
